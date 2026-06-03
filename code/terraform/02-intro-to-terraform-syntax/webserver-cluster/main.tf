@@ -15,26 +15,61 @@ data "aws_ssm_parameter" "al2023_ami" {
   name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
 }
 
-resource "aws_launch_configuration" "example" {
-  image_id        = data.aws_ssm_parameter.al2023_ami.value
-  instance_type   = "t2.micro"
-  security_groups = [aws_security_group.instance.id]
+resource "aws_iam_role" "ssm" {
+  path = "/"
 
-  user_data = <<-EOF
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ssm" {
+  role       = aws_iam_role.ssm.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_instance_profile" "ssm" {
+  path = "/"
+  role = aws_iam_role.ssm.name
+}
+
+resource "aws_launch_template" "example" {
+  name_prefix            = "terraform-"
+  image_id               = data.aws_ssm_parameter.al2023_ami.value
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.instance.id]
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.ssm.name
+  }
+
+  user_data = base64encode(<<-EOF
               #!/bin/bash
+              systemctl enable amazon-ssm-agent
+              systemctl start amazon-ssm-agent
+              dnf install -y busybox
               echo "Hello, World" > index.html
               nohup busybox httpd -f -p ${var.server_port} &
               EOF
-
-  # Required when using a launch configuration with an auto scaling group.
-  lifecycle {
-    create_before_destroy = true
-  }
+  )
 }
 
 resource "aws_autoscaling_group" "example" {
-  launch_configuration = aws_launch_configuration.example.name
-  vpc_zone_identifier  = data.aws_subnets.default.ids
+  vpc_zone_identifier = data.aws_subnets.default.ids
+
+  launch_template {
+    id      = aws_launch_template.example.id
+    version = "$Latest"
+  }
 
   target_group_arns = [aws_lb_target_group.asg.arn]
   health_check_type = "ELB"

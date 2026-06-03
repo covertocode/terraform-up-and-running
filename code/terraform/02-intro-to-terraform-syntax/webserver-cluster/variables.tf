@@ -19,5 +19,5 @@ variable "instance_security_group_name" {
 variable "alb_security_group_name" {
   description = "The name of the security group for the ALB"
   type        = string
-  default     = "terraform-example-alb-v3"
+  default     = "terraform-example-alb"
 }
