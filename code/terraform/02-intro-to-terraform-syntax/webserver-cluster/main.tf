@@ -50,7 +50,8 @@ resource "aws_autoscaling_group" "example" {
 }
 
 resource "aws_security_group" "instance" {
-  name = var.instance_security_group_name
+  name   = var.instance_security_group_name
+  vpc_id = data.aws_vpc.default.id
 
   ingress {
     from_port   = var.server_port
@@ -134,7 +135,8 @@ resource "aws_lb_listener_rule" "asg" {
 
 resource "aws_security_group" "alb" {
 
-  name = var.alb_security_group_name
+  name   = var.alb_security_group_name
+  vpc_id = data.aws_vpc.default.id
 
   # Allow inbound HTTP requests
   ingress {

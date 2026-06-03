@@ -13,11 +13,11 @@ variable "alb_name" {
 variable "instance_security_group_name" {
   description = "The name of the security group for the EC2 Instances"
   type        = string
-  default     = "terraform-example-instance"
+  default     = "terraform-example-instance-v3"
 }
 
 variable "alb_security_group_name" {
   description = "The name of the security group for the ALB"
   type        = string
-  default     = "terraform-example-alb"
+  default     = "terraform-example-alb-v3"
 }
