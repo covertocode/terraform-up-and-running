@@ -12,16 +12,30 @@ terraform {
 provider "aws" {}
 
 
-data "aws_ssm_parameter" "al2023_ami" {
-  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+data "aws_ami" "ubuntu_2404" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 }
 
 resource "aws_instance" "app" {
   instance_type = "t2.micro"
-  ami           = data.aws_ssm_parameter.al2023_ami.value
+  ami           = data.aws_ami.ubuntu_2404.id
 
   user_data = <<-EOF
               #!/bin/bash
-              sudo service apache2 start
+              apt-get update -y
+              apt-get install -y apache2
+              systemctl enable apache2
+              systemctl start apache2
               EOF
 }

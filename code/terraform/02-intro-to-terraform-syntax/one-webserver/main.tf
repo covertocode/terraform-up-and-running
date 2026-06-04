@@ -11,8 +11,19 @@ terraform {
 
 provider "aws" {}
 
-data "aws_ssm_parameter" "al2023_ami" {
-  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+data "aws_ami" "ubuntu_2404" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 }
 
 resource "aws_iam_role" "ssm" {
@@ -43,16 +54,18 @@ resource "aws_iam_instance_profile" "ssm" {
 }
 
 resource "aws_instance" "example" {
-  ami                    = data.aws_ssm_parameter.al2023_ami.value
+  ami                    = data.aws_ami.ubuntu_2404.id
   instance_type          = "t2.micro"
   iam_instance_profile   = aws_iam_instance_profile.ssm.name
   vpc_security_group_ids = [aws_security_group.instance.id]
 
   user_data = <<-EOF
               #!/bin/bash
-              systemctl enable amazon-ssm-agent
-              systemctl start amazon-ssm-agent
-              dnf install -y busybox
+              apt-get update -y
+              snap install amazon-ssm-agent --classic
+              systemctl enable snap.amazon-ssm-agent.amazon-ssm-agent.service
+              systemctl start snap.amazon-ssm-agent.amazon-ssm-agent.service
+              apt-get install -y busybox
               echo "Hello, World" > index.html
               nohup busybox httpd -f -p 8080 &
               EOF
