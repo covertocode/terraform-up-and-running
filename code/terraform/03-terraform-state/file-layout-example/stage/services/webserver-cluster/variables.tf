@@ -6,11 +6,13 @@
 variable "db_remote_state_bucket" {
   description = "The name of the S3 bucket used for the database's remote state storage"
   type        = string
+  default     = "fctc-e7d358b"
 }
 
 variable "db_remote_state_key" {
   description = "The name of the key in the S3 bucket used for the database's remote state storage"
   type        = string
+  default     = "bingo/terraform.tfstate"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -33,7 +35,7 @@ variable "alb_name" {
 variable "instance_security_group_name" {
   description = "The name of the security group for the EC2 Instances"
   type        = string
-  default     = "terraform-example-instance"
+  default     = "terraform-example-instance-sg"
 }
 
 variable "alb_security_group_name" {
