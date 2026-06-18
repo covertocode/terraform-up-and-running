@@ -1,7 +1,9 @@
 # MySQL on RDS example (production environment)
 
-This folder contains an example [Terraform](https://www.terraform.io/) configuration that deploys a MySQL database  (using 
-[RDS](https://aws.amazon.com/rds/) in an [Amazon Web Services (AWS) account](http://aws.amazon.com/). 
+This folder contains an example [Terraform](https://www.terraform.io/) configuration that deploys a MySQL database (using
+[RDS](https://aws.amazon.com/rds/)) in an [Amazon Web Services (AWS) account](http://aws.amazon.com/). It uses the
+reusable module in [modules/data-stores/mysql](../../../modules/data-stores/mysql) which also publishes the database
+connection details to [AWS SSM Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html). 
 
 For more info, please see Chapter 4, "How to Create Reusable Infrastructure with Terraform Modules", of 
 *[Terraform: Up and Running](http://www.terraformupandrunning.com)*.
@@ -34,9 +36,6 @@ Configure the database credentials as environment variables:
 export TF_VAR_db_username=(desired database username)
 export TF_VAR_db_password=(desired database password)
 ```
-
-Open `main.tf`, uncomment the `backend` configuration, and fill in the name of your S3 bucket, DynamoDB table, and
-the path to use for the Terraform state file.
 
 Deploy the code:
 
