@@ -28,3 +28,9 @@ variable "db_name" {
   default     = "example_database"
 }
 
+variable "environment" {
+  description = "The environment name (e.g. stage, prod)"
+  type        = string
+  default     = "stage"
+}
+
