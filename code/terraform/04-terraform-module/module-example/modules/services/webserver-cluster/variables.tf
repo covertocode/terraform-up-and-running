@@ -1,20 +1,10 @@
-# ---------------------------------------------------------------------------------------------------------------------
-# REQUIRED PARAMETERS
-# You must provide a value for each of these parameters.
-# ---------------------------------------------------------------------------------------------------------------------
-
 variable "cluster_name" {
   description = "The name to use for all the cluster resources"
   type        = string
 }
 
-variable "db_remote_state_bucket" {
-  description = "The name of the S3 bucket for the database's remote state"
-  type        = string
-}
-
-variable "db_remote_state_key" {
-  description = "The path for the database's remote state in S3"
+variable "db_ssm_prefix" {
+  description = "The SSM parameter path prefix where DB connection info is stored (e.g. /stage/data-stores/mysql)"
   type        = string
 }
 
@@ -33,14 +23,8 @@ variable "max_size" {
   type        = number
 }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# OPTIONAL PARAMETERS
-# These parameters have reasonable defaults.
-# ---------------------------------------------------------------------------------------------------------------------
-
 variable "server_port" {
   description = "The port the server will use for HTTP requests"
   type        = number
   default     = 8080
 }
-

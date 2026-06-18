@@ -16,9 +16,8 @@ provider "aws" {
 module "webserver_cluster" {
   source = "../../../modules/services/webserver-cluster"
 
-  cluster_name           = var.cluster_name
-  db_remote_state_bucket = var.db_remote_state_bucket
-  db_remote_state_key    = var.db_remote_state_key
+  cluster_name  = var.cluster_name
+  db_ssm_prefix = "/prod/data-stores/mysql"
 
   instance_type = "m4.large"
   min_size      = 2
@@ -44,4 +43,3 @@ resource "aws_autoscaling_schedule" "scale_in_at_night" {
 
   autoscaling_group_name = module.webserver_cluster.asg_name
 }
-
