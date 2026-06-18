@@ -6,7 +6,7 @@ Content for the repo was seeded from ["Terraform: Up & Running" by Yevgeniy Brik
 
 ## Modernization and updates
 
-### `code/terraform/04-terraform-module/module-example`
+### [`code/terraform/04-terraform-module/module-example`](code/terraform/04-terraform-module/module-example)
 
 - Replaced deprecated aws_launch_configuration with aws_launch_template in the webserver-cluster module — uses dynamic Ubuntu 24.04 AMI lookup, base64encode() for user_data, and adds IAM instance profile for SSM access
 
